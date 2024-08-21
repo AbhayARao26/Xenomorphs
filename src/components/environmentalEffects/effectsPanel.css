@@ -1,0 +1,198 @@
+.effects-panel {
+    color: white;
+    position: absolute;
+    bottom: 2%;
+    left: 2%;
+    width: 360px; /* Increased from 320px */
+    padding: 15px;
+    border-radius: 25px; /* Significantly increased from 15px */
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    font-family: Helvetica, sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    max-height: 85vh;
+    overflow-y: auto;
+    font-size: 12px; /* Increased from 11px */
+}
+
+.effects-panel.expanded {
+    width: 380px; /* Increased when expanded */
+}
+
+.effects-panel-title {
+    font-size: 20px; /* Increased from 14px */
+    margin-bottom: 18px;
+    font-weight: bold;
+}
+
+.effects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px; /* Increased from 8px */
+    transition: all 0.3s ease;
+}
+
+.effect-control {
+    background: rgba(110, 110, 110, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px; /* Significantly increased from 10px */
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.effect-control.expanded {
+    grid-column: span 3;
+}
+
+.effect-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.effect-toggle {
+    background-color: grey;
+    border: none;
+    width: 36px; /* Increased from 28px */
+    height: 36px; /* Increased from 28px */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+.effect-toggle.active {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.effect-toggle svg {
+    color: white;
+    transition: all 0.3s ease;
+    width: 20px; /* Adjusted icon size */
+    height: 20px; /* Adjusted icon size */
+}
+
+.effect-toggle.active svg {
+    color: #333;
+}
+
+.effect-name {
+    font-size: 11px; /* Increased from 9px */
+    text-align: center;
+}
+
+.effect-properties {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.effect-control.expanded .effect-properties {
+    max-height: 1000px;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+.effect-property {
+    margin-bottom: 10px;
+}
+
+.effect-property label {
+    display: block;
+    font-size: 11px; /* Increased from 9px */
+    margin-bottom: 4px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80%;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+    border-radius: 15px; /* Increased from 10px */
+    height: 18px; /* Increased from 14px */
+}
+
+/* Track: webkit browsers */
+.slider::-webkit-slider-runnable-track {
+    height: 18px; /* Increased from 14px */
+    background: #888888;
+    border-radius: 15px; /* Increased from 10px */
+}
+
+/* Track: Mozilla Firefox */
+.slider::-moz-range-track {
+    height: 18px; /* Increased from 14px */
+    background: #888888;
+    border-radius: 15px; /* Increased from 10px */
+}
+
+/* Thumb: webkit */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px; /* Increased from 14px */
+    height: 18px; /* Increased from 14px */
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: none;
+    cursor: pointer;
+}
+
+/* Thumb: Firefox */
+.slider::-moz-range-thumb {
+    width: 18px; /* Increased from 14px */
+    height: 18px; /* Increased from 14px */
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: none;
+    cursor: pointer;
+}
+
+.slider-value {
+    font-size: 11px; /* Increased from 9px */
+    min-width: 30px; /* Increased from 24px */
+    text-align: right;
+}
+
+/* Scrollbar styles */
+.effects-panel::-webkit-scrollbar {
+    width: 8px; /* Increased from 6px */
+}
+
+.effects-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px; /* Increased from 3px */
+}
+
+.effects-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px; /* Increased from 3px */
+}
+
+.effects-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}

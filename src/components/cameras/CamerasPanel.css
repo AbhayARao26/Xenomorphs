@@ -1,0 +1,197 @@
+.cameras-panel {
+    color: white;
+    position: absolute;
+    bottom: 50%;
+    right: 2%;
+    width: 325px;
+    padding-left: 15px;
+    padding-top: 15px;
+    padding-right: 15px;
+
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-family: Helvetica, sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: width 0.5s, height 0.5s, opacity 0.5s;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.cameras-panel h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.add-camera-dropdown {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.add-camera-button {
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(0, 111, 255);
+    color: white;
+    border: none;
+    border-radius: 22px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.add-camera-button:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-content {
+    margin-top: 10px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(126, 126, 126, 0.86);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 15px;
+    overflow: hidden;
+    z-index: 1;
+    max-height: 0;
+    transition: max-height 0.3s ease-out;
+    font-size: 0.5em;
+}
+
+.dropdown-content.open {
+    max-height: 200px;
+    margin-top: 10px; /* Add margin when open */
+
+    transition: max-height 0.3s ease-in;
+}
+
+.dropdown-content button {
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dropdown-content button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.camera-item {
+    margin-bottom: 15px;
+    border-radius: 20px;
+    background: rgba(110, 110, 110, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.camera-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.control-button {
+    background-color: rgba(136, 136, 136, 0.39);
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s;
+}
+
+.control-button:hover {
+    background-color: rgba(136, 136, 136, 0.6);
+}
+
+.control-button.active {
+    background-color: rgb(0, 111, 255);
+}
+
+.camera-params {
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.param-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.param-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.param-input:last-child {
+    margin-right: 0;
+}
+
+.param-input label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.param-input input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    background-color: rgba(136, 136, 136, 0.39);
+    color: white;
+    font-size: 14px;
+    font-weight: lighter;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+}
+
+.param-input input[type="number"]:focus {
+    border-color: rgb(0, 111, 255);
+    box-shadow: 0 0 1px rgba(0, 111, 255, 0.5);
+}
+
+/* Specific styles for perspective camera */
+.camera-item[data-type="perspective"] .param-row:first-child {
+    display: flex;
+}
+
+.camera-item[data-type="perspective"] .param-row:first-child .param-input {
+    flex: 1;
+}
+
+/* Specific styles for orthographic camera */
+.camera-item[data-type="orthographic"] .param-row {
+    display: flex;
+}
+
+.camera-item[data-type="orthographic"] .param-row .param-input {
+    flex: 1;
+}
+
+
