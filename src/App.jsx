@@ -121,7 +121,7 @@ export default function App() {
         {
             target: '.canvas-container',
             content: 'This is the 3D canvas where your model is displayed.',
-            placement: 'top',
+            placement: 'bottom',
         },
         {
             target: '.menu-bar',
