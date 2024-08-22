@@ -154,12 +154,6 @@ export default function App() {
             waitFor: '.lights-panel'
         },
         {
-            target: '.ar-button',
-            content: 'Click here to enter AR mode.',
-            placement: 'top',
-            waitFor: '.ar-button'
-        },
-        {
             target: '.effects-panel',
             content: 'This is the effects panel where you can manage environmental effects.',
             placement: 'left',
