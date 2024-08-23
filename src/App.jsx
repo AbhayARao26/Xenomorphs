@@ -25,6 +25,7 @@ import {
     EnvironmentalEffects,
     EnvironmentalEffectsControls
 } from "./components/environmentalEffects/EnvironmentalEffects.jsx";
+import IntroPage from './components/introPage.jsx';
 
 
 const store = createXRStore()
@@ -113,6 +114,12 @@ export default function App() {
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, component: null });
     // State to handle context menu visibility and position
 
+    const [showIntro, setShowIntro] = useState(true);
+
+    const handleStart = () => {
+        setShowIntro(false);
+    };
+
     const [tourCompleted, setTourCompleted] = useState(false);
     const [initialOpenedComponents, setInitialOpenedComponents] = useState([]); // Save initial state
     const [isTourRunning, setIsTourRunning] = useState(false); // Track tour status 
@@ -121,12 +128,12 @@ export default function App() {
         {
             target: '.canvas-container',
             content: 'This is the 3D canvas where your model is displayed.',
-            placement: 'bottom',
+            placement: 'top',
         },
         {
-            target: '.menu-bar',
-            content: 'This is the navigation bar where you can access all the different panels.',
-            placement: 'bottom',
+            target: '.menu-bar', // Target the NavBar
+            content: 'This is the navigation bar where you can access different panels.',
+            placement: 'top',
             waitFor: '.menu-bar'
         },
         {
@@ -154,12 +161,6 @@ export default function App() {
             waitFor: '.lights-panel'
         },
         {
-            target: '.ar-button',
-            content: 'Click here to enter AR mode.',
-            placement: 'top',
-            waitFor: '.ar-button'
-        },
-        {
             target: '.effects-panel',
             content: 'This is the effects panel where you can manage environmental effects.',
             placement: 'left',
@@ -174,7 +175,7 @@ export default function App() {
         if (status === 'running' && !isTourRunning) {
             // Tour just started
             setInitialOpenedComponents(openedComponents); // Save the currently opened components
-            setOpenedComponents(['keyframes', 'materials', 'cameras', 'lights', 'effects']); // Open all panels for the tour
+            setOpenedComponents(['keyframes', 'materials', 'cameras', 'lights', 'effects']); // Open all panels
             setIsTourRunning(true);
         }
 
@@ -521,6 +522,9 @@ export default function App() {
     };
     return (
         <div className="app-container">
+            {showIntro ? (
+                <IntroPage onStart={handleStart} />
+            ) : ( <>
             <Joyride
                 steps={steps}
                 continuous
@@ -615,7 +619,8 @@ export default function App() {
                     setEffects={setEffects}
                 />
             )}
-
+        </>
+        )}
 
 
 

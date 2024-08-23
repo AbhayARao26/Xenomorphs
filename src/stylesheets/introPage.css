@@ -1,0 +1,93 @@
+/* stylesheets/IntroPage.css */
+
+/* Basic reset */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.intro-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align content to the top */
+    height: 100vh; /* Ensure container covers at least the viewport height */
+    text-align: center;
+    background-color: black; /* Set the base background color */
+    background-image: 
+        linear-gradient(to right, grey 1px, transparent 1px),
+        linear-gradient(to bottom, grey 1px, transparent 1px);
+    background-size: 100px 100px; /* Size of the grid squares */
+    color: white; /* Optional: Change text color for better contrast */
+    padding: 20px; /* Add some padding */
+    box-sizing: border-box; /* Ensure padding doesn't affect container size */
+    position: relative; /* Ensure absolute positioning within */
+}
+
+.icon-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem; /* Adjust padding as needed */
+    background: rgba(0, 0, 0, 0.8); /* Optional: add a background if needed */
+    z-index: 10; /* Ensure the icon container stays on top */
+}
+
+.icon-container h1 {
+    background: linear-gradient(45deg, rgb(111, 1, 184), #fc6d25); /* Adjust the gradient colors and direction as needed */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; /* Define the standard property 'background-clip' */
+    font-size: 5rem; /* Adjust font size as needed */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+.content-container {
+    display: flex;
+    flex-direction: row; /* Ensure boxes are side by side */
+    width: 100%; /* Ensure content-container takes full width */
+    padding: 20px 0; /* Add padding to ensure spacing around boxes */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    margin-top: 80px; /* Add margin to push content below the fixed h1 */
+    position: relative; /* Ensure positioning context for boxes */
+    height: calc(100% - 80px); /* Adjust height to account for fixed header */
+}
+
+.box {
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.box1 {
+    background-color: rgba(41, 129, 252, 0.8); /* Blue */
+    flex: 8; /* 7 parts of the width */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    text-align: left; /* Ensure text is left aligned */
+    height: 100%; /* Ensure full height */
+}
+
+.box2 {
+    background-color: rgba(254, 46, 46, 0.7); /* Semi-transparent red */
+    flex: 2; /* 3 parts of the width */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Ensure full height */
+}
+
+.try-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #fff; /* Button background color */
+    color: #4CAF50; /* Button text color */
+}
