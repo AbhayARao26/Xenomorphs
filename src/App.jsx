@@ -525,14 +525,14 @@ export default function App() {
             {showIntro ? (
                 <IntroPage onStart={handleStart} />
             ) : ( <>
-            <Joyride
+            {uiVisible && (<Joyride
                 steps={steps}
                 continuous
                 scrollToFirstStep
                 showSkipButton
                 showProgress
                 callback={handleJoyrideCallback}
-            />
+            />)}
             {uiVisible && (
                 <NavBar
                     setActiveComponent={handleActiveComponentChange}
@@ -613,7 +613,7 @@ export default function App() {
             )}
             {uiVisible && openedComponents.includes('cameras') && <CamerasPanel cameras={cameras}/>}
             {uiVisible && openedComponents.includes('lights') && <LightsPanel lights={lights} onAddLight={handleAddLight}/>}
-            {openedComponents.includes('effects') && (
+            {uiVisible && openedComponents.includes('effects') && (
                 <EnvironmentalEffectsControls
                     effects={effects}
                     setEffects={setEffects}
@@ -621,9 +621,6 @@ export default function App() {
             )}
         </>
         )}
-
-
-
         </div>
     );
 }
