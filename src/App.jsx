@@ -571,13 +571,13 @@ export default function App() {
                             selectedObject={selectedObject}
                             showTransformControls={showTransformControls}
                         />
-                        <OrbitControls makeDefault={true}/>
-                        <GridHelperColored/>
-                        <CameraManager/>
-                        <LightManager/>
-                        <SceneContent setCameras={setCameras} setLights={setLights}/>
-                        <EnvironmentalEffects effects={effects} />
                     </XR>
+                    <OrbitControls makeDefault={true}/>
+                    <GridHelperColored/>
+                    <CameraManager/>
+                    <LightManager/>
+                    <SceneContent setCameras={setCameras} setLights={setLights}/>
+                    <EnvironmentalEffects effects={effects} />
                 </Canvas>
             </div>
             {uiVisible && openedComponents.includes('keyframes') && (
