@@ -20,7 +20,9 @@
     "react-joyride": "^2.8.2",
     "react-three-fiber": "^6.0.13",
     "three": "^0.164.1",
-    "valtio": "^1.13.2"
+    "valtio": "^1.13.2",
+    "webxr-polyfill": "^2.0.3",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@react-three/postprocessing": "^2.16.2",

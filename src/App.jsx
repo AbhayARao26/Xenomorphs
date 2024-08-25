@@ -20,6 +20,7 @@ import LightsPanel from './components/lights/LightsPanel.jsx';
 import { lightNames, activeLight, lightParams } from './atoms.js';
 import LightManager from "./components/lights/LightManager.jsx";
 import { XR, createXRStore, useXR } from '@react-three/xr'
+import { createWithEqualityFn, useStoreWithEqualityFn } from 'zustand/traditional';
 import { Glasses} from 'lucide-react';
 import {
     EnvironmentalEffects,

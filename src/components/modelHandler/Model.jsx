@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
+import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { importParser } from '../fileHandlers/importUtils.jsx';
@@ -78,7 +78,7 @@ const Model = forwardRef(({
 
      */
 
-    const clock = useRef(new THREE.Clock());
+    const clock = new THREE.Clock();
     // Sets a clock from the current point of execution
 
     const [actions, setActions] = useState({});
@@ -93,6 +93,8 @@ const Model = forwardRef(({
     const modelRef = useRef(null);
     // Reference to the model that I import
 
+    const [selectedObject, setSelectedObject] = useState(null); // State for selected object
+
     useImperativeHandle(ref, () => ({
         getModel: () => modelRef.current,
         captureTransform,
@@ -103,29 +105,29 @@ const Model = forwardRef(({
     I am saying ref refers to the value of modelRef.current, using a method getModel, that shall be returned to the parent object.
      */
 
-    const importModel = useMemo(() => {
-        if (importFile) {
-            return new Promise((resolve) => {
-                importParser(importFile, (gltf) => {
-                    const model = gltf.scene;
-                    model.name = 'myModel';
-                    resetToInitialFrame(modelRef);
-                    resolve({ model, animations: gltf.animations || [] });
-                });
-            });
-        }
-        return null;
-    }, [importFile]);
-
     useEffect(() => {
-        if (importModel) {
-            importModel.then(({ model, animations }) => {
-                // Clear existing model
-                while (groupRef.current.children.length) {
-                    groupRef.current.remove(groupRef.current.children[0]);
-                }
+        if (groupRef.current && importFile) {
+            while (groupRef.current.children.length) {
+                groupRef.current.remove(groupRef.current.children[0]);
+            }
+            // ERRORREQ: Specifically for dependencies importFile, setExportTrigger, loop. Which may cause problem of resetting the model unexpectedly.
+
+            importParser(importFile, (gltf) => {
+                // As discussed in importUtils, a method to import file along with a callback parameter below.
+
+                const model = gltf.scene;
+                // To extract the model(s) from my GLTF File
+
+                model.name = 'myModel';
                 groupRef.current.add(model);
                 modelRef.current = model;
+                // The group reference will be added with the model, using this parameter. As well as the import point is that, modelRef.current is set to the model that I have read.
+
+                resetToInitialFrame(modelRef);
+                // Reset on load
+
+                const existingAnimations = gltf.animations || [];
+                // Returns an AnimationClip Array type
 
                 const newActions = {};
                 // Accessing animations over here. gltf.Animations returns an ArrayType "[]" which contains my animation objects.
@@ -133,7 +135,7 @@ const Model = forwardRef(({
                 // The "newActions" parameter will basically take stuff like all my existing animations, as well as my new custom animations.
                 // Basically, it's literally an animations collection of the object. It contains the pre-existing animations, as well as the animations I would add to my object later.
 
-                animations.forEach((animation) => {
+                existingAnimations.forEach((animation) => {
                     const action = mixer.clipAction(animation, model);
                     // Obtain each "animation" from "model"
 
@@ -149,42 +151,102 @@ const Model = forwardRef(({
                 // Add custom animations
                 Object.keys(customAnimations).forEach((name) => {
                     const anim = customAnimations[name];
-                    const customClip = createCustomAnimationClip(anim, model.name);
+                    const initialPosition = anim.initialPosition || [0, 0, 0];
+                    const finalPosition = anim.finalPosition || [0, 0, 0];
+                    const initialScale = anim.initialScale || [1, 1, 1];
+                    const finalScale = anim.finalScale || [1, 1, 1];
+                    const initialRotation = anim.initialRotation || [0, 0, 0];
+                    const finalRotation = anim.finalRotation || [0, 0, 0];
+                    // Extract values of AnimationClips
+
+                    const positionKF = new THREE.VectorKeyframeTrack(
+                        `${model.name}.position`,
+                        [0, anim.duration],
+                        [...initialPosition, ...finalPosition]
+                    );
+                    // I mention the object as myModel, whose ".position" properties are being tracked now. Remember, this is not naming, but rather I am accessing property position on the model name 'myModel'.
+                    // This is our first track. Here we use the THREE Method, "VectorKeyframeTrack".
+
+                    const scaleKF = new THREE.VectorKeyframeTrack(
+                        `${model.name}.scale`,
+                        [0, anim.duration],
+                        [...initialScale, ...finalScale]
+                    );
+
+                    const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+                    const validateRotation = (rotation) => {
+                        return rotation.map(r => parseFloat(r) || 0);
+                    };
+                    const validInitialRotation = validateRotation(initialRotation);
+                    const validFinalRotation = validateRotation(finalRotation);
+                    const initialEuler = new THREE.Euler(
+                        toRadians(validInitialRotation[0]),
+                        toRadians(validInitialRotation[1]),
+                        toRadians(validInitialRotation[2])
+                    );
+
+                    const finalEuler = new THREE.Euler(
+                        toRadians(validFinalRotation[0]),
+                        toRadians(validFinalRotation[1]),
+                        toRadians(validFinalRotation[2])
+                    );
+
+                    const rotationKF = new THREE.QuaternionKeyframeTrack(
+                        `${model.name}.quaternion`,
+                        [0, anim.duration],
+                        [
+                            ...new THREE.Quaternion().setFromEuler(initialEuler).toArray(),
+                            ...new THREE.Quaternion().setFromEuler(finalEuler).toArray()
+                        ]
+                    );
+                    // Similar to position keyframing, self-explanatory
+
+                    // Similar to position keyframing, self-explanatory
+
+                    const customClip = new THREE.AnimationClip(name, anim.duration, [positionKF, scaleKF, rotationKF]);
+                    // We create a custom clip, basically defining the animation name, with duration and other things like tracks that the animation is defined by.
+                    // This right now, defines animation 'wireframe' if that makes sense.
+
                     const customAction = mixer.clipAction(customClip, model);
                     customAction.loop = loop ? THREE.LoopRepeat : THREE.LoopOnce;
                     customAction.clampWhenFinished = !loop;
                     newActions[name] = customAction;
+                    // So remember, all these animations, are for appended animations, that we added after importing the model.
+                    // On any state changes of dependencies given below we do not want anything to reset.
+                    // Hence, we save the models attached and new animations, that we appended while working on this project, and re-append it. It can be made better.
+
+                    // FEATREQ: Can be refactored.
                 });
 
                 setActions(newActions);
+                // setActions is setting new actions to newActions.
                 setModelLoaded(true);
+                // Setting the model loaded state boolean as true.
 
                 // Update available animations
-                const animationNames = [...animations.map(anim => anim.name), ...Object.keys(customAnimations)];
+                const animationNames = [...existingAnimations.map(anim => anim.name), ...Object.keys(customAnimations)];
                 setAvailableAnimations(animationNames);
+                // Apply available animations, to new collection and save it to animationNames.
 
-                setExportTrigger(() => () => handleExport(modelRef, scene, { scene: model, animations }, animations, customAnimations));
+                setExportTrigger(() => () => handleExport(modelRef, scene, gltf, existingAnimations, customAnimations));
+                // Export Trigger. Handling that using handleExport callback, which is given below. It can now export with custom animations also.
             });
         }
-    }, [importModel, mixer, setExportTrigger, loop, customAnimations, setAvailableAnimations, scene]);
-
-    useEffect(() => {
-        if (modelLoaded) {
-            Object.values(actions).forEach(action => {
-                action.loop = loop ? THREE.LoopRepeat : THREE.LoopOnce;
-                action.clampWhenFinished = !loop;
-            });
-        }
-    }, [loop, actions, modelLoaded]);
+    }, [importFile, mixer, setExportTrigger, loop, customAnimations, setAvailableAnimations, selectedAnimations]);
+    // ERRORREQ: Dependencies. Check out if Loop needed.
 
     // This specifically is a R3F Hook, which is performed on every frame change, no matter what.
     useFrame(() => {
-        const delta = clock.current.getDelta();
+        const delta = clock.getDelta();
         // Time elapsed since last frame.
 
-        if (animationControl === 'play' && modelLoaded) {
+        if (animationControl === 'play') {
             mixer.update(delta);
             // Time to update the frames by delta.
+        } else if (animationControl === 'pause') {
+            mixer.update(0);
+            // Do not update the current frame of animation. Basically update my animations by 0ms.
         }
     });
 
@@ -194,11 +256,12 @@ const Model = forwardRef(({
             if (animationControl === 'play') {
                 // If the play button is on state to play.
 
-                selectedAnimations.forEach(name => {
+                Object.keys(actions).forEach(name => {
                     // All animations, actions associated with that model. Now of the selectedAnimations,
                     // if it is included inside the selected animations, set paused state as false,
                     // and continue to play the animations, using the .play method on that AnimationAction.
-                    if (actions[name]) {
+
+                    if (selectedAnimations.includes(name)) {
                         actions[name].paused = false;
                         actions[name].play();
                     }
@@ -209,53 +272,37 @@ const Model = forwardRef(({
             } else if (animationControl === 'pause') {
                 setPausedAt(mixer.time);
                 mixer.timeScale = 0;
-                Object.values(actions).forEach(action => {
-                    action.paused = true;
+                Object.keys(actions).forEach(name => {
+                    actions[name].paused = true;
                 });
                 // Self-explanatory, as the before one.
             }
         }
     }, [animationControl, actions, selectedAnimations, modelLoaded, mixer]);
+    // Dependencies of this useEffect clause that would be operated if any of these dependencies change.
 
-    const captureTransform = () => {
-        if (modelRef.current) {
+
+    const captureTransform=()=>{
+        if(modelRef.current){
             // Obtain the current reference
 
-            const position = modelRef.current.position.toArray();
-            const scale = modelRef.current.scale.toArray();
-            const rotation = modelRef.current.rotation.toArray();
+
+
+            const position=modelRef.current.position.toArray();
+            const scale=modelRef.current.scale.toArray();
+            const rotation=modelRef.current.rotation.toArray();
             // Obtain the reference position and other stuff
 
-            return { position, scale, rotation };
-        } else {
+
+
+            return {position, scale, rotation}
+        }else{
             return null;
         }
-    };
+    }
     // To be utilised for both position, scale and rotation
 
-    const createCustomAnimationClip = (anim, modelName) => {
-        const tracks = [
-            new THREE.VectorKeyframeTrack(
-                `${modelName}.position`,
-                [0, anim.duration],
-                [...anim.initialPosition, ...anim.finalPosition]
-            ),
-            new THREE.VectorKeyframeTrack(
-                `${modelName}.scale`,
-                [0, anim.duration],
-                [...anim.initialScale, ...anim.finalScale]
-            ),
-            new THREE.QuaternionKeyframeTrack(
-                `${modelName}.quaternion`,
-                [0, anim.duration],
-                [
-                    ...new THREE.Quaternion().setFromEuler(new THREE.Euler(...anim.initialRotation.map(r => r * (Math.PI / 180)))).toArray(),
-                    ...new THREE.Quaternion().setFromEuler(new THREE.Euler(...anim.finalRotation.map(r => r * (Math.PI / 180)))).toArray()
-                ]
-            )
-        ];
-        return new THREE.AnimationClip(anim.name, anim.duration, tracks);
-    };
+
 
     return (
         <>
@@ -263,14 +310,14 @@ const Model = forwardRef(({
                 ref={groupRef}
                 onPointerUp={(e) => {
                     e.stopPropagation();
+                    setSelectedObject(e.object);
                     onObjectClick(e.object);
                 }}
             />
-            {showTransformControls && (
                 <TransformControlsResponsive
                     modelRef={modelRef}
                 />
-            )}
+            <Effects selectedObject={selectedObject} />
         </>
     );
 });
