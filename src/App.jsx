@@ -521,6 +521,12 @@ export default function App() {
             // You might want to update your global state here
         }
     };
+
+    const handleSessionEnd = () => {
+        console.log("VR session ended");
+        setCanvasKey((prevKey) => prevKey + 1); // Update the key to force re-render
+      };
+
     return (
         <div className="app-container">
             {showIntro ? (
@@ -548,6 +554,7 @@ export default function App() {
             <div className="canvas-container">
                 <Canvas camera={{position: [-8, 5, 8]}} onClick={handleCanvasClick}>
                     <XR store={store}>
+                    <XRSessionListener onSessionEnd={handleSessionEnd} />
                         {/*<Environment files="./src/assets/environments/tableMountSunset.hdr" background />*/}
                         <ambientLight intensity={0.5}/>
                         <directionalLight position={[0, 10, 5]} intensity={1}/>
